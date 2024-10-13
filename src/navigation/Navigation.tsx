@@ -4,7 +4,13 @@ import ProductItem from '../screens/ProductItem';
 import ProductList from '../screens/ProductList';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const Root = createNativeStackNavigator();
+export type RootStackParamList = {
+  ProductList: undefined;
+  ProductItem: { productID: string };
+  AddProduct: undefined;
+};
+
+const Root = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator = () => {
   return (
