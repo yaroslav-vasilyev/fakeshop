@@ -16,7 +16,7 @@ const ProductInfo: React.FC<Props> = ({route}) => {
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.price}>{price} UAH</Text>
-        <View style={{ height: 1, width: '100%', backgroundColor: '#EDEDED', marginBottom: 15 }} />
+        <View style={styles.separator} />
         <Text style={styles.description}>{description}</Text>
       </View>
     </ScrollView>
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
   },
+  separator: { height: 1, width: '100%', backgroundColor: '#EDEDED', marginBottom: 15 },
   image: {
     width: '100%',
     height: 300,

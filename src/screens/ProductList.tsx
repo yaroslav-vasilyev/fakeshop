@@ -1,48 +1,103 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useEffect} from 'react';
-import {FlatList, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {FlatList, StyleSheet, TextInput, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {ThunkDispatch} from 'redux-thunk';
 import {fetchProducts} from '../api/getProducts';
+import ProductItem from '../components/ProductItem';
+import SkeletonPlaceholder from '../components/SkeletonPlaceholder';
 import {RootStackParamList} from '../navigation/Navigation';
 import {Product, ProductsActions, ProductsState} from '../store/types';
-import ProductItem from './ProductItem';
-import SkeletonPlaceholder from './SkeletonPlaceholder';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
 
 const ProductList: React.FC<Props> = ({navigation}) => {
+  const [searchText, setSearchText] = useState('');
+  const [debouncedSearchText, setDebouncedSearchText] = useState(searchText);
   const dispatch =
     useDispatch<ThunkDispatch<ProductsState, unknown, ProductsActions>>();
   const products = useSelector((state: ProductsState) => state.products);
 
-  const handleProductPress = useCallback((product: Product) => {
-    navigation.navigate('ProductInfo', { product });
-  }, [navigation]);
+  const handleProductPress = useCallback(
+    (product: Product) => {
+      navigation.navigate('ProductInfo', {product});
+    },
+    [navigation],
+  );
 
   useEffect(() => {
-    !products.length && dispatch(fetchProducts());
+    if (!products.length) {
+      dispatch(fetchProducts());
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchText(searchText);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
+
+  const filteredProducts = useMemo(() => products.filter(product =>
+    product.title.toLowerCase().includes(debouncedSearchText.toLowerCase())
+  ), [debouncedSearchText, products]);
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Пошук товарів..."
+        value={searchText}
+        onChangeText={setSearchText}
+      />
       {!products.length ? (
         <SkeletonPlaceholder />
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts}
           numColumns={2}
           keyExtractor={({title, id}) => `${title}-${id}`}
           renderItem={({item: product}) => (
-            <ProductItem product={product} onPress={() => handleProductPress(product)} />
+            <ProductItem
+              product={product}
+              onPress={() => handleProductPress(product)}
+            />
           )}
-          contentContainerStyle={{ paddingBottom: 16, flexGrow: 1, margin: 25 }}
-          columnWrapperStyle={{ justifyContent: 'space-between', gap: 13 }}
+          contentContainerStyle={styles.contentContainer}
+          columnWrapperStyle={styles.columnWrapper}
         />
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    margin: 25,
+  },
+  contentContainer: {
+    paddingBottom: 16,
+    flexGrow: 1,
+    marginHorizontal: 25,
+    marginBottom: 25,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 13,
+  },
+});
 
 export default ProductList;
