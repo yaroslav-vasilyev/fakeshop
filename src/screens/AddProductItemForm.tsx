@@ -95,6 +95,7 @@ const AddProductItemForm: React.FC<Props> = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Назва товару"
+                placeholderTextColor={'black'}
                 onChangeText={handleChange('title')}
                 onBlur={handleBlur('title')}
                 value={values.title}
@@ -108,6 +109,7 @@ const AddProductItemForm: React.FC<Props> = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Ціна товару"
+                placeholderTextColor={'black'}
                 onChangeText={handleChange('price')}
                 onBlur={handleBlur('price')}
                 value={values.price}
@@ -122,6 +124,7 @@ const AddProductItemForm: React.FC<Props> = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Опис товару"
+                placeholderTextColor={'black'}
                 onChangeText={handleChange('description')}
                 onBlur={handleBlur('description')}
                 value={values.description}
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
+    color: 'black',
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,

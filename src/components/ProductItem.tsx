@@ -27,7 +27,8 @@ const ProductItem: React.FC<Props> = ({ product, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '48%',
+    flex: 1,
+    maxWidth: '48%',
     flexShrink: 1,
     borderRadius: 10,
     minHeight: 156,

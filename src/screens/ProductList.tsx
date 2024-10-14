@@ -1,6 +1,6 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {FlatList, StyleSheet, TextInput, View} from 'react-native';
+import {FlatList, Image, StyleSheet, Text, TextInput, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {ThunkDispatch} from 'redux-thunk';
 import {fetchProducts} from '../api/getProducts';
@@ -8,6 +8,7 @@ import ProductItem from '../components/ProductItem';
 import SkeletonPlaceholder from '../components/SkeletonPlaceholder';
 import {RootStackParamList} from '../navigation/Navigation';
 import {Product, ProductsActions, ProductsState} from '../store/types';
+import ProductListEmptyContent from '../components/ProductListEmptyContent';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
 
@@ -51,6 +52,7 @@ const ProductList: React.FC<Props> = ({navigation}) => {
       <TextInput
         style={styles.searchInput}
         placeholder="Пошук товарів..."
+        placeholderTextColor={'black'}
         value={searchText}
         onChangeText={setSearchText}
       />
@@ -69,6 +71,7 @@ const ProductList: React.FC<Props> = ({navigation}) => {
           )}
           contentContainerStyle={styles.contentContainer}
           columnWrapperStyle={styles.columnWrapper}
+          ListEmptyComponent={<ProductListEmptyContent />}
         />
       )}
     </View>
@@ -81,6 +84,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
+    color: 'black',
     borderColor: '#ccc',
     backgroundColor: 'white',
     borderWidth: 1,
