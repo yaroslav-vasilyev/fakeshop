@@ -1,24 +1,37 @@
-import { View, Text, Button } from 'react-native';
+import { View, Text, Image, Pressable } from 'react-native';
 import React from 'react';
-import useProduct from '../hooks/useProduct';
-import { RootStackParamList } from '../navigation/Navigation';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Product } from '../store/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ProductItem'>;
+interface Props {
+  product: Product;
+  onPress: () => void;
+}
 
-const ProductItem: React.FC<Props> = ({ route, navigation }) => {
-  const { productID } = route.params;
-  const product = useProduct(productID);
-
+const ProductItem: React.FC<Props> = ({ product, onPress }) => {  
   return (
-    <View>
-      <Button
-        title="Go Back"
-        onPress={() => navigation.goBack()}
-      />
-      <Text>{product?.title}</Text>
-    </View>
+    <Pressable 
+      onPress={onPress} 
+      style={{ width: '48%', flexShrink: 1, borderRadius: 10, minHeight: 156, backgroundColor: 'white', alignItems: 'center', marginBottom: 25, paddingHorizontal: 10, paddingVertical: 15, gap: 25 }}>
+      <Image width={100} height={100} style={{ resizeMode: 'contain' }} source={{ uri: product.image }} />
+      <View style={{ alignItems: 'center', gap: 5 }}>
+        <Text 
+          style={{ 
+            textAlign: 'center', 
+            color: 'black', 
+          }}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {product.title}
+        </Text>
+        <Text style={{ color: 'red' }}>{product.price} UAH</Text>
+      </View>
+    </Pressable>
   );
 };
 
-export default ProductItem;
+const areEqual = (prevProps: Props, nextProps: Props) => {
+  return prevProps.product.title === nextProps.product.title;
+};
+
+export default React.memo(ProductItem, areEqual);

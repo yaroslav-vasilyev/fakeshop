@@ -14,7 +14,7 @@ export const fetchProducts = (): ThunkAction<
       const response = await fetch('https://fakestoreapi.com/products');
       const products = (await response.json()) as Product[];
       dispatch(setProducts(products));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching products:', error);
     }
   };

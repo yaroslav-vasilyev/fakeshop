@@ -1,14 +1,24 @@
-import React, {useEffect} from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import React, {useCallback, useEffect} from 'react';
+import {FlatList, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {ThunkDispatch} from 'redux-thunk';
 import {fetchProducts} from '../api/getProducts';
-import {ProductsActions, ProductsState} from '../store/types';
+import {RootStackParamList} from '../navigation/Navigation';
+import {Product, ProductsActions, ProductsState} from '../store/types';
+import ProductItem from './ProductItem';
+import SkeletonPlaceholder from './SkeletonPlaceholder';
 
-const ProductList = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'ProductList'>;
+
+const ProductList: React.FC<Props> = ({navigation}) => {
   const dispatch =
     useDispatch<ThunkDispatch<ProductsState, unknown, ProductsActions>>();
   const products = useSelector((state: ProductsState) => state.products);
+
+  const handleProductPress = useCallback((product: Product) => {
+    navigation.navigate('ProductInfo', { product });
+  }, [navigation]);
 
   useEffect(() => {
     !products.length && dispatch(fetchProducts());
@@ -16,19 +26,21 @@ const ProductList = () => {
   }, []);
 
   return (
-    <View>
-      <Text>ProductList</Text>
-      {products.map(product => (
-        <Text>{product.title}</Text>
-      ))}
-      <FlatList
-        data={products}
-        contentContainerStyle={{ gap: 16, paddingBottom: 16 }}
-        keyExtractor={({ title, id }) => `${title}-${id}`}
-        renderItem={({ item: product }) => (
-          <Text>{product.title}</Text>
-        )}
-      />
+    <View style={{ flex: 1 }}>
+      {!products.length ? (
+        <SkeletonPlaceholder />
+      ) : (
+        <FlatList
+          data={products}
+          numColumns={2}
+          keyExtractor={({title, id}) => `${title}-${id}`}
+          renderItem={({item: product}) => (
+            <ProductItem product={product} onPress={() => handleProductPress(product)} />
+          )}
+          contentContainerStyle={{ paddingBottom: 16, flexGrow: 1, margin: 25 }}
+          columnWrapperStyle={{ justifyContent: 'space-between', gap: 13 }}
+        />
+      )}
     </View>
   );
 };
